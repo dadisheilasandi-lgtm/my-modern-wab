@@ -1,24 +1,41 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
 
-# Tema Dashboard Modern
-st.set_page_config(page_title="HTN AI Project", layout="wide")
+# Konfigurasi Halaman
+st.set_page_config(page_title="HTN Data Processor", layout="wide")
 
-st.title("🚀 Dashboard Analisis AI Modern")
-st.write("Selamat datang di platform otomatisasi data.")
+st.title("🚀 HTN AI: Smart Data Processor")
+st.markdown("Unggah file Excel atau CSV Anda untuk dianalisis secara instan.")
 
-# Membuat 3 kolom metrik bergaya profesional
-col1, col2, col3 = st.columns(3)
-col1.metric("Proses Data", "5000+", "Aktif")
-col2.metric("Kecepatan AI", "0.2ms", "-0.01ms")
-col3.metric("Status Server", "Online", "Stable")
+# Fitur Upload File
+uploaded_file = st.file_uploader("Pilih file (CSV atau Excel)", type=['csv', 'xlsx'])
 
-st.markdown("---")
+if uploaded_file is not None:
+    # Membaca data berdasarkan formatnya
+    try:
+        if uploaded_file.name.endswith('.csv'):
+            df = pd.read_csv(uploaded_file)
+        else:
+            df = pd.read_excel(uploaded_file)
 
-# Grafik Interaktif
-st.subheader("Visualisasi Tren Data")
-data = pd.DataFrame(np.random.randn(20, 3), columns=['Analisis A', 'Analisis B', 'Analisis C'])
-st.line_chart(data)
+        # Menampilkan Metrik Otomatis
+        col1, col2, col3 = st.columns(3)
+        col1.metric("Total Baris Data", len(df))
+        col2.metric("Total Kolom", len(df.columns))
+        col3.metric("Status", "Siap Diproses")
 
-st.success("Website ini berhasil dijalankan langsung dari GitHub!")
+        st.markdown("---")
+
+        # Menampilkan Preview Data
+        st.subheader("Preview Data Anda:")
+        st.dataframe(df.head(10)) # Menampilkan 10 baris pertama
+
+        # Grafik Sederhana (Jika ada data numerik)
+        st.subheader("Visualisasi Cepat")
+        st.area_chart(df.select_dtypes(include=['number']))
+
+    except Exception as e:
+        st.error(f"Terjadi kesalahan saat membaca file: {e}")
+
+else:
+    st.info("Menunggu file diunggah... Silakan pilih file Excel/CSV dari laptop Anda.")
